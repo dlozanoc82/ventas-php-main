@@ -1,16 +1,27 @@
 <?php
 
-// En esta etapa no se consulta la base de datos.
-// Más adelante aquí se buscará el producto que se desea editar.
+require_once "../config/conexion.php";
 
-$producto = [
-    "id" => "",
-    "nombre" => "",
-    "precio" => "",
-    "stock" => "",
-    "categoria_id" => ""
-];
+$id = $_GET["id"];
 
-$categorias = [];
+$sql = "SELECT * FROM productos WHERE id = :id";
+
+$stmt = $conexion->prepare($sql);
+
+$stmt->execute([
+    ":id" => $id
+]);
+
+$producto = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$producto) {
+    die("Producto no encontrado");
+}
+
+$sql = "SELECT * FROM categorias ORDER BY nombre ASC";
+
+$resultado = $conexion->query($sql);
+
+$categorias = $resultado->fetchAll(PDO::FETCH_ASSOC);
 
 require_once "../views/productos/formulario.php";
